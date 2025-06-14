@@ -3,14 +3,14 @@
 
 # 1. ロードバランサーのグローバル静的 IP アドレスを予約
 resource "google_compute_global_address" "load_balancer_ip" {
-  name = "sample-app-dev-lb-ip"
+  name = "sample-app-${var.environment}-lb-ip"
 }
 
 # 2. グローバル転送ルール
 # これで対象の IP アドレスへのトラフィックは HTTP プロキシに送られるようになる
 # IP アドレスとバックエンドの名前解決を行うようなもの
 resource "google_compute_global_forwarding_rule" "load_balancer" {
-  name       = "sample-app-dev-forwarding-rule"
+  name       = "sample-app-${var.environment}-forwarding-rule"
   target     = google_compute_target_http_proxy.load_balancer.id
   ip_address = google_compute_global_address.load_balancer_ip.address
   port_range = "80"
@@ -19,12 +19,12 @@ resource "google_compute_global_forwarding_rule" "load_balancer" {
 # 3. HTTP プロキシと URL マップ
 # URLマップを使ってトラフィックを処理する
 resource "google_compute_target_http_proxy" "load_balancer" {
-  name    = "sample-app-dev-http-proxy"
+  name    = "sample-app-${var.environment}-http-proxy"
   url_map = google_compute_url_map.load_balancer.id
 }
 
 resource "google_compute_url_map" "load_balancer" {
-  name        = "sample-app-dev-lb"
+  name        = "sample-app-${var.environment}-lb"
   description = "Load balancer for sample app"
   # ここにパスマッチングを書く
   default_service = google_compute_backend_service.cloud_run_backend.id
@@ -34,7 +34,7 @@ resource "google_compute_url_map" "load_balancer" {
 # Load Balancer からこの Backend へトラフィックが流れる
 # どのようにトラフィックを送るかを制御する
 resource "google_compute_backend_service" "cloud_run_backend" {
-  name        = "sample-app-dev-backend"
+  name        = "sample-app-${var.environment}-backend"
   protocol    = "HTTP"
   port_name   = "http"
   timeout_sec = 30
@@ -53,7 +53,7 @@ resource "google_compute_backend_service" "cloud_run_backend" {
 # どこにサービスがあるかを知らせる役割
 # Cloud Run のインスタンスは入れ替わるものなので、 NEG を使って場所を知らせる役割
 resource "google_compute_region_network_endpoint_group" "cloud_run_neg" {
-  name                  = "sample-app-dev-neg"
+  name                  = "sample-app-${var.environment}-neg"
   network_endpoint_type = "SERVERLESS"
   region                = "asia-northeast1"
 

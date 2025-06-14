@@ -52,5 +52,6 @@ output "cloud_run_url" {
 
 # module 
 module "terraform_sample_development" {
-  source = "../module"
+  source     = "../module"
+  project_id = local.project_id
 }

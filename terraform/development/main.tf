@@ -23,7 +23,7 @@ resource "google_cloud_run_v2_service" "sample_app" {
     }
   }
 
-  depends_on = [google_project_service.cloud_run]
+  depends_on = [module.terraform_sample_development]
 }
 
 # Cloud Run サービスへのパブリックアクセスを許可
@@ -48,4 +48,9 @@ resource "google_cloud_run_v2_service_iam_policy" "noauth" {
 output "cloud_run_url" {
   description = "Cloud Run サービスの URL"
   value       = google_cloud_run_v2_service.sample_app.uri
+}
+
+# module 
+module "terraform_sample_development" {
+  source = "../module"
 }

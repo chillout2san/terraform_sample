@@ -1,13 +1,3 @@
-# Container Registry を有効にする
-resource "google_project_service" "container_registry" {
-  service = "containerregistry.googleapis.com"
-}
-
-# Cloud Run を有効にする
-resource "google_project_service" "cloud_run" {
-  service = "run.googleapis.com"
-}
-
 # Cloud Run サービス
 resource "google_cloud_run_v2_service" "sample_app" {
   name     = "sample-app-dev"
@@ -52,13 +42,6 @@ resource "google_cloud_run_v2_service_iam_policy" "noauth" {
   name     = google_cloud_run_v2_service.sample_app.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
-}
-
-# 変数定義
-variable "project_id" {
-  description = "GCP プロジェクト ID"
-  type        = string
-  default     = "terraform-sample-dev"
 }
 
 # 出力
